@@ -27,22 +27,32 @@ jwt = JWTManager(app)
 @app.route("/register", methods=["POST"])
 def register():
     data = request.json
-    if not data.get("email") or not data.get("password"):
-        return jsonify({"error": "Missing email or password"}), 400
+
+    
+    required_fields = ["first_name", "last_name", "email", "password"]
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return jsonify({"error": f"Missing {field}"}), 400
 
     
     if db.users.find_one({"email": data["email"]}):
         return jsonify({"error": "User already exists"}), 400
-    
-    hashed_pw = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
 
+   
+    password_bytes = data["password"].encode("utf-8")
+    hashed_pw = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+
+    
     user = {
         "first_name": data["first_name"],
         "last_name": data["last_name"],
         "email": data["email"],
-        "password": hashed_pw.decode("utf-8"),
+        "password": hashed_pw.decode("utf-8"),  
     }
+
+
     db.users.insert_one(user)
+
     return jsonify({"message": "User registered successfully"}), 201
 
 
