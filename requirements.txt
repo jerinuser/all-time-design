@@ -3,3 +3,4 @@ Flask_JWT_Extended==4.7.1
 pymongo==4.11.1
 python-dotenv==1.0.1
 python_bcrypt==0.3.2
+gunicorn==21.2.0
